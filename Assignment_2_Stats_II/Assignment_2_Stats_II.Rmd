@@ -1,5 +1,66 @@
 ---
-title: "Assignment_2_Stats_II"
+title: "Assignment_2_Statistics_II"
 output: html_document
+author: 
+  - Maik David Klaiber (22-482-426)
+  - Jonas Weber (24-621-484)
+  - Yann Rochaix (24-622-276)
+date: "`r Sys.Date()`"
 ---
+```{r setup, include =FALSE}
+library(tidyverse)
+library(summarytools)
+```
+## Exercise 1 - Data Preparation
+We imported the datasets using `read_delim()` and `read_csv()` from the `readr` package to handle different separators. We then used `dfSummary()` from the `summarytools` package to automatically check the data. The difference in row counts gives us a first hint, that there might be a mismatch in the number of cantons. This summary also shows us, that there are no missing values. 
+```{r, message=FALSE, results='hide'}
+cantons<- read_delim("ps2_cantons_cleaned.csv", delim = ";")
+surnames<- read_csv("ps2_cantons_surnames.csv")
+dfSummary(surnames)
+dfSummary(cantons)
+```
+We used `mutate()` to consolidate the individual proportions into a single surname variable and then applied `select()` to remove the original columns, streamlining the tibble for a cleaner merge. Then, to show the rows that have no  matching canton name in the canton dataset, we use `antijoin` to reveal them. 
+```{r, message=FALSE}
+surnames <- surnames %>%
+  mutate(surname = share_mueller + share_maier) %>%
+  select(-share_mueller, -share_maier)
+
+surnames %>% 
+  anti_join(cantons, by = "canton")
+```
+In this step, we harmonized the naming convention by recoding "Sankt Gallen" to "St. Gallen" and filtered out the "Sri Lanka" entry to ensure the surnames dataset exclusively contains valid Swiss cantons for the subsequent join. After performing the merge, we used `select()` to retain only the essential variables for analysis: GDP, population, immigration, and the newly calculated surname shares. We then verified the integrity of the join by confirming there are zero missing values and that all 26 distinct Swiss cantons are correctly represented in the final data frame.
+```{r}
+surnames <- surnames %>%
+  mutate(canton = recode(canton, "Sankt Gallen" = "St. Gallen")) %>%
+  filter(canton != "Sri Lanka")
+
+df <- cantons %>% #Merge the surname dataset into the canton dataset
+  left_join(surnames, by = "canton") %>%
+  select(gdp, population, immigration, surname)
+
+sum(is.na(df$surname))          
+n_distinct(cantons$canton)
+
+```
+## Exercise 2 - Estimation of an univariate model
+The specific regression equation for this problem is:
+$$gdp_i = \beta_0 + \beta_1 \cdot surname_i + u_i$$
+```{r}
+model <- lm(gdp ~ surname, data = df)
+summary(model)
+
+```
+### Results
+**Intercept $\hat{\beta}_0 = 10,077.28$:** A canton with a `surname` share of zero is predicted to have a GDP of CHF 10'077 million. This is not meaningful in practice since all cantons have some share of these surnames.
+
+
+**Slope $\hat{\beta}_1 = 449,550$:** For each one percentage point increase in the combined Mueller/Maier surname share, GDP is predicted to increase by CHF 449'550 million. This reflects that larger cantons naturally have both more people with common surnames and higher total GDP.
+```{r}
+avg_surname <- mean(df$surname)
+predicted_gdp <- predict(model, newdata = data.frame(surname = avg_surname))
+print(predicted_gdp)
+
+```
+The average `surname` share across cantons is 0.0413, and the model predicts a GDP of CHF 28'656 million at this value. For each additional percentage point increase in the Mueller/Maier surname share beyond this average, GDP is predicted to increase by CHF 449'550 million.
+
 
