@@ -55,24 +55,15 @@ summary(model)
 
 
 **Slope $\hat{\beta}_1 = 449,550$:** For each one percentage point increase in the combined Mueller/Maier surname share, GDP is predicted to increase by CHF 449'550 million. This reflects that larger cantons naturally have both more people with common surnames and higher total GDP.
+
+
 ```{r}
-<<<<<<< Updated upstream
-avg_surname <- mean(df$surname)
-predicted_gdp <- predict(model, newdata = data.frame(surname = avg_surname))
-print(predicted_gdp)
-
-```
-The average `surname` share across cantons is 0.0413, and the model predicts a GDP of CHF 28'656 million at this value. For each additional percentage point increase in the Mueller/Maier surname share beyond this average, GDP is predicted to increase by CHF 449'550 million.
-=======
-# Population-weighted average surname share
 avg_surname_weighted <- sum(df$surname * df$population) / sum(df$population)
-
 predicted_gdp <- predict(model, newdata = data.frame(surname = avg_surname_weighted))
 print(as.numeric(predicted_gdp))
-
-
 ```
-For each additional percentage point increase in the Mueller/Maier surname share beyond this average, GDP is predicted to increase by CHF 4'495,5 million.
->>>>>>> Stashed changes
+
+For each additional percentage point increase in the Mueller/Maier surname share beyond this average, GDP is predicted to increase by CHF 4'495,50 million.
+
 
 
