@@ -1,0 +1,486 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Assignment\_2\_Statistics\_II},
+  pdfauthor={Maik David Klaiber (22-482-426); Jonas Weber (24-621-484); Yann Rochaix (24-622-276)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Assignment\_2\_Statistics\_II}
+\author{Maik David Klaiber (22-482-426) \and Jonas Weber
+(24-621-484) \and Yann Rochaix (24-622-276)}
+\date{2026-03-14}
+
+\begin{document}
+\maketitle
+
+\subsection{Exercise 1 - Data
+Preparation}\label{exercise-1---data-preparation}
+
+We imported the datasets using \texttt{read\_delim()} and
+\texttt{read\_csv()} from the \texttt{readr} package to handle different
+separators. We then used \texttt{dfSummary()} from the
+\texttt{summarytools} package to automatically check the data. The
+difference in row counts gives us a first hint, that there might be a
+mismatch in the number of cantons. This summary also shows us, that
+there are no missing values.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cantons}\OtherTok{\textless{}{-}} \FunctionTok{read\_delim}\NormalTok{(}\StringTok{"ps2\_cantons\_cleaned.csv"}\NormalTok{, }\AttributeTok{delim =} \StringTok{";"}\NormalTok{)}
+\NormalTok{surnames}\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"ps2\_cantons\_surnames.csv"}\NormalTok{)}
+\FunctionTok{dfSummary}\NormalTok{(surnames)}
+\FunctionTok{dfSummary}\NormalTok{(cantons)}
+\end{Highlighting}
+\end{Shaded}
+
+We used \texttt{mutate()} to consolidate the individual proportions into
+a single surname variable and then applied \texttt{select()} to remove
+the original columns, streamlining the tibble for a cleaner merge. Then,
+to show the rows that have no matching canton name in the canton
+dataset, we use \texttt{antijoin} to reveal them.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{surnames }\OtherTok{\textless{}{-}}\NormalTok{ surnames }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{surname =}\NormalTok{ share\_mueller }\SpecialCharTok{+}\NormalTok{ share\_maier) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{share\_mueller, }\SpecialCharTok{{-}}\NormalTok{share\_maier)}
+
+\NormalTok{surnames }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{anti\_join}\NormalTok{(cantons, }\AttributeTok{by =} \StringTok{"canton"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 2
+##   canton        surname
+##   <chr>           <dbl>
+## 1 Sri Lanka    0.000016
+## 2 Sankt Gallen 0.0726
+\end{verbatim}
+
+In this step, we harmonized the naming convention by recoding ``Sankt
+Gallen'' to ``St.~Gallen'' and filtered out the ``Sri Lanka'' entry to
+ensure the surnames dataset exclusively contains valid Swiss cantons for
+the subsequent join. After performing the merge, we used
+\texttt{select()} to retain only the essential variables for analysis:
+GDP, population, immigration, and the newly calculated surname shares.
+We then verified the integrity of the join by confirming there are zero
+missing values and that all 26 distinct Swiss cantons are correctly
+represented in the final data frame.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{surnames }\OtherTok{\textless{}{-}}\NormalTok{ surnames }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{canton =} \FunctionTok{recode}\NormalTok{(canton, }\StringTok{"Sankt Gallen"} \OtherTok{=} \StringTok{"St. Gallen"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(canton }\SpecialCharTok{!=} \StringTok{"Sri Lanka"}\NormalTok{)}
+
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ cantons }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\#Merge the surname dataset into the canton dataset}
+  \FunctionTok{left\_join}\NormalTok{(surnames, }\AttributeTok{by =} \StringTok{"canton"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(gdp, population, immigration, surname)}
+
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{surname))          }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{n\_distinct}\NormalTok{(cantons}\SpecialCharTok{$}\NormalTok{canton)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 26
+\end{verbatim}
+
+\subsection{Exercise 2 - Estimation of an univariate
+model}\label{exercise-2---estimation-of-an-univariate-model}
+
+The specific regression equation for this problem is:
+\[gdp_i = \beta_0 + \beta_1 \cdot surname_i + u_i\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(gdp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ surname, }\AttributeTok{data =}\NormalTok{ df)}
+\FunctionTok{summary}\NormalTok{(model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = gdp ~ surname, data = df)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -43665 -10345  -7762   6033  42831 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)    10077       4856   2.075   0.0489 *  
+## surname       449550      68427   6.570 8.54e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 20130 on 24 degrees of freedom
+## Multiple R-squared:  0.6427, Adjusted R-squared:  0.6278 
+## F-statistic: 43.16 on 1 and 24 DF,  p-value: 8.54e-07
+\end{verbatim}
+
+\subsubsection{Results}\label{results}
+
+\textbf{Intercept \(\hat{\beta}_0 = 10,077.28\):} A canton with a
+\texttt{surname} share of zero is predicted to have a GDP of CHF 10'077
+million. This is not meaningful in practice since all cantons have some
+share of these surnames.
+
+\textbf{Slope \(\hat{\beta}_1 = 449,550\):} For each one percentage
+point increase in the combined Mueller/Maier surname share, GDP is
+predicted to increase by CHF 449'550 million. This reflects that larger
+cantons naturally have both more people with common surnames and higher
+total GDP.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{avg\_surname\_weighted }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{surname }\SpecialCharTok{*}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{population) }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{population)}
+\NormalTok{predicted\_gdp }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(model, }\AttributeTok{newdata =} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{surname =}\NormalTok{ avg\_surname\_weighted))}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(predicted\_gdp))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 51512.57
+\end{verbatim}
+
+For each additional percentage point increase in the Mueller/Maier
+surname share beyond this average, GDP is predicted to increase by CHF
+4'495,50 million.
+
+\subsection{Exercise 3 - Comparison of two univariate
+models}\label{exercise-3---comparison-of-two-univariate-models}
+
+We estimate the regression of \(gdp\) on \(\log(\text{immigration})\)
+and compute the corresponding \(R^2\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Estimate regression of GDP on the log of immigration}
+\NormalTok{model\_log }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(gdp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{log}\NormalTok{(immigration), }\AttributeTok{data =}\NormalTok{ cantons)}
+\FunctionTok{summary}\NormalTok{(model\_log)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = gdp ~ log(immigration), data = cantons)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -25926 -11024  -5529   5363  79253 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)          8147       5353   1.522    0.141    
+## log(immigration)    18564       3061   6.065  2.9e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 21160 on 24 degrees of freedom
+## Multiple R-squared:  0.6052, Adjusted R-squared:  0.5887 
+## F-statistic: 36.79 on 1 and 24 DF,  p-value: 2.903e-06
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Define R² from the population model estimated in Exercise 2}
+\NormalTok{r\_squared\_surname }\OtherTok{\textless{}{-}} \FloatTok{0.6427}
+
+\CommentTok{\# Create a small table comparing the R² values of both models}
+\NormalTok{r2\_table }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{model =} \FunctionTok{c}\NormalTok{(}\StringTok{"surname (exercise 2)"}\NormalTok{, }\StringTok{"log(immigration) model"}\NormalTok{),}
+  \AttributeTok{R\_squared =} \FunctionTok{c}\NormalTok{(r\_squared\_surname, }\FunctionTok{summary}\NormalTok{(model\_log)}\SpecialCharTok{$}\NormalTok{r.squared)}
+\NormalTok{)}
+
+\NormalTok{r2\_table}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 2
+##   model                  R_squared
+##   <chr>                      <dbl>
+## 1 surname (exercise 2)       0.643
+## 2 log(immigration) model     0.605
+\end{verbatim}
+
+What does \(R^2\) measure here intuitively? \(R^2\) measures the
+proportion of the variation in \(y\) that is explained by the regression
+model. A higher \(R^2\) indicates greater explanatory power of the
+model.
+
+What amount of variation in \texttt{gdp} is explained? The surname model
+explains about 64.3\% of the variation in \(gdp\), while the
+log(immigration) model explains about 60.5\%. Thus, the surname model
+has higher explanatory power.
+
+Unbiasedness of the Estimators for Surname and Immigration The OLS
+estimators are unbiased if the assumption \(E(u \mid X) = 0\) holds
+(SLR.4), meaning that the error term has an average value of zero for
+any given value of \(X\). This requires that the explanatory variable is
+not systematically related to omitted factors that affect \(gdp\).
+
+In the surname model, this assumption is likely violated because surname
+shares may be correlated with underlying regional or demographic
+characteristics that also influence economic performance. If such
+relevant factors are omitted from the regression, the estimator for the
+surname coefficient may be biased due to omitted variable bias.
+
+A similar issue may arise in the immigration model. For example,
+\texttt{education\ levels} could be an omitted variable. Higher
+education levels can increase productivity and therefore \(gdp\). At the
+same time, economically attractive cantons with better labor market
+opportunities may attract more immigrants. If education is correlated
+with immigration and affects \(gdp\), the immigration coefficient may
+capture part of this effect, leading to biased OLS estimates.
+
+Relationship between unbiasedness of a coefficient estimator and \(R^2\)
+Unbiasedness of an estimator depends on the assumption
+\(E(u \mid X) = 0\). In contrast, \(R^2\) measures how much of the
+variation in the dependent variable is explained by the model.
+Therefore, unbiasedness and predictive power are not directly related
+and a model can have a high \(R^2\) while the coefficient estimates are
+still biased.
+
+\subsection{Exercise 4 - Univariate model without a
+constant}\label{exercise-4---univariate-model-without-a-constant}
+
+We state the formula without the constant \(\beta_0\) as \[
+gdp_i = \beta_1 \, surname_i + u_i
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Estimate the regression of gdp on surname without an intercept ({-}1)}
+\FunctionTok{lm}\NormalTok{(gdp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ surname }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{, }\AttributeTok{data =}\NormalTok{ df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = gdp ~ surname - 1, data = df)
+## 
+## Coefficients:
+## surname  
+##  532247
+\end{verbatim}
+
+Why did the coefficient on surname change compared to subexercise 2? The
+coefficient changes because the regression is estimated without an
+intercept, forcing the regression line to pass through the origin. In
+this case, the OLS estimator simplifies from
+\(\hat{\beta}_1 = \frac{\sum (x_i-\bar{x})(y_i-\bar{y})}{\sum (x_i-\bar{x})^2}\)
+to \(\hat{\beta}_1 = \frac{\sum x_i y_i}{\sum x_i^2}\), which changes
+the estimated slope (from 449,550 to 532,247).
+
+\subsection{Exercise 5 - Code your own OLS
+estimator}\label{exercise-5---code-your-own-ols-estimator}
+
+We estimate the parameters of the univariate regression model
+
+\[
+y_i = \beta_0 + \beta_1 x_i + u_i .
+\]
+
+Using the OLS formulas, the slope coefficient is given by
+
+\[
+\hat{\beta}_1 =
+\frac{\sum_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y})}
+{\sum_{i=1}^{N}(x_i-\bar{x})^2}.
+\]
+
+The intercept is then calculated as
+
+\[
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}.
+\]
+
+In our application, we regress \texttt{gdp} (as Y) on \texttt{surname}
+(as X), including an intercept. Thus, the vectors \texttt{gdp} and
+\texttt{surname} are used as inputs to compute the OLS estimators using
+the formulas above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{estimate\_ols }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(y, x) \{}
+  
+  \CommentTok{\# Compute the OLS slope coefficient beta\_1 using the analytical formula above}
+\NormalTok{  beta\_1 }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{((x }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(x)) }\SpecialCharTok{*}\NormalTok{ (y }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(y))) }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{((x }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(x))}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+  
+  \CommentTok{\# Compute the intercept beta\_0}
+\NormalTok{  beta\_0 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(y) }\SpecialCharTok{{-}}\NormalTok{ beta\_1 }\SpecialCharTok{*} \FunctionTok{mean}\NormalTok{(x)}
+  
+  \CommentTok{\# Return the estimated coefficients as a named vector}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\AttributeTok{beta\_0 =}\NormalTok{ beta\_0, }\AttributeTok{beta\_1 =}\NormalTok{ beta\_1))}
+\NormalTok{\}}
+
+\FunctionTok{estimate\_ols}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{gdp, df}\SpecialCharTok{$}\NormalTok{surname)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    beta_0    beta_1 
+##  10077.28 449549.89
+\end{verbatim}
+
+Verification against the lm() function The manually computed
+coefficients are virtually identical to those obtained with
+\texttt{lm()} in Exercise 2. This confirms that our implementation
+correctly reproduces the OLS estimators.
+
+Modification of function We extend our OLS function by adding the
+boolean argument \texttt{add\_constant}, which allows us to estimate the
+regression either with or without an intercept.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+    \CommentTok{\#In this case "false" {-}\textgreater{} in order to verify beta\_1 with the exercise 3 above}
+\NormalTok{estimate\_ols\_modified }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(y, x, }\AttributeTok{add\_constant =} \ConstantTok{FALSE}\NormalTok{) \{ }
+  
+  \ControlFlowTok{if}\NormalTok{ (add\_constant }\SpecialCharTok{==} \ConstantTok{TRUE}\NormalTok{) \{}
+    
+    \CommentTok{\# OLS with intercept}
+\NormalTok{    beta\_1 }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{((x }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(x)) }\SpecialCharTok{*}\NormalTok{ (y }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(y))) }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{((x }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(x))}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{    beta\_0 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(y) }\SpecialCharTok{{-}}\NormalTok{ beta\_1 }\SpecialCharTok{*} \FunctionTok{mean}\NormalTok{(x)}
+    
+    \FunctionTok{return}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\AttributeTok{beta\_0 =}\NormalTok{ beta\_0, }\AttributeTok{beta\_1 =}\NormalTok{ beta\_1))}
+    
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    
+    \CommentTok{\# OLS without intercept}
+\NormalTok{    beta\_1 }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(x }\SpecialCharTok{*}\NormalTok{ y) }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(x}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+    
+    \FunctionTok{return}\NormalTok{(beta\_1)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\FunctionTok{estimate\_ols\_modified}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{gdp, df}\SpecialCharTok{$}\NormalTok{surname)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 532247.2
+\end{verbatim}
+
+Verification with result in subexercise 4 The estimated coefficient
+obtained with \texttt{add\_constant\ =\ FALSE} is identical to the
+result from
+\texttt{lm(gdp\ \textasciitilde{}\ surname\ -\ 1,\ data\ =\ df)} in
+subexercise 4 (532247), confirming that the implementation correctly
+reproduces the OLS estimator for the model without an intercept.
+
+\end{document}

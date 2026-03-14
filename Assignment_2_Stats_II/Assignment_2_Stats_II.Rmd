@@ -1,11 +1,13 @@
 ---
 title: "Assignment_2_Statistics_II"
-output: html_document
-author: 
-  - Maik David Klaiber (22-482-426)
-  - Jonas Weber (24-621-484)
-  - Yann Rochaix (24-622-276)
+author:
+- "Maik David Klaiber (22-482-426)"
+- "Jonas Weber (24-621-484)"
+- "Yann Rochaix (24-622-276)"
 date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
 ---
 ```{r setup, include =FALSE}
 library(tidyverse)
@@ -51,10 +53,10 @@ summary(model)
 
 ```
 ### Results
-**Intercept $\hat{\beta}_0 = 10,077.28$:** A canton with a `surname` share of zero is predicted to have a GDP of CHF 10'077 million. This is not meaningful in practice since all cantons have some share of these surnames.
+**Intercept $\hat{\beta}_0 = 10,077.28$:** A canton with a `surname` share of zero is predicted to have a GDP of CHF 10,077 million. This is not meaningful in practice since all cantons have some share of these surnames.
 
 
-**Slope $\hat{\beta}_1 = 449,550$:** For each one percentage point increase in the combined Mueller/Maier surname share, GDP is predicted to increase by CHF 449'550 million. This reflects that larger cantons naturally have both more people with common surnames and higher total GDP.
+**Slope $\hat{\beta}_1 = 449,550$:** For each one percentage point increase in the combined Mueller/Maier surname share, GDP is predicted to increase by CHF 449,550 million. This reflects that larger cantons tend to have both more people with common surnames and higher total GDP, so the relationship mainly captures canton size rather than a causal effect of surnames.
 
 
 ```{r}
@@ -63,7 +65,151 @@ predicted_gdp <- predict(model, newdata = data.frame(surname = avg_surname_weigh
 print(as.numeric(predicted_gdp))
 ```
 
-For each additional percentage point increase in the Mueller/Maier surname share beyond this average, GDP is predicted to increase by CHF 4'495,50 million.
+For each additional percentage point increase in the Mueller/Maier surname share beyond this average, GDP is predicted to increase by CHF 4,495.50 million.
+
+
+## Exercise 3 - Comparison of two univariate models
+
+We estimate the regression of $gdp$ on $\log(\text{immigration})$ and compute the corresponding $R^2$.
+```{r}
+
+# Estimate regression of GDP on the log of immigration
+model_log <- lm(gdp ~ log(immigration), data = df)
+summary(model_log)
+
+# Define R² from the population model estimated in Exercise 2
+r_squared_surname <- 0.6427
+
+# Create a small table comparing the R² values of both models
+r2_table <- tibble(
+  model = c("surname (exercise 2)", "log(immigration) model"),
+  R_squared = c(r_squared_surname, summary(model_log)$r.squared)
+)
+
+r2_table
+
+```
+
+<b>What does $R^2$ measure here intuitively?</b><br>
+$R^2$ measures the proportion of the variation in $y$ that is explained by the regression model. A higher $R^2$ indicates greater explanatory power of the model.
+
+<b>What amount of variation in `gdp` is explained?</b><br>
+The surname model explains about 64.3\% of the variation in $gdp$, while the log(immigration) model explains about 60.5\%. Thus, the surname model has higher explanatory power.
+
+<b>Unbiasedness of the Estimators for Surname and Immigration</b><br>
+The OLS estimators are unbiased if the assumption $E(u \mid X) = 0$ holds (SLR.4), meaning that the error term has an average value of zero for any given value of $X$. This requires that the explanatory variable is not systematically related to omitted factors that affect $gdp$.
+
+In the surname model, this assumption is likely violated because surname shares may be correlated with underlying regional or demographic characteristics that also influence economic performance. If such relevant factors are omitted from the regression, the estimator for the surname coefficient may be biased due to omitted variable bias.
+
+A similar issue may arise in the immigration model. For example, `education levels` could be an omitted variable. Higher education levels can increase productivity and therefore $gdp$. At the same time, economically attractive cantons with better labor market opportunities may attract more immigrants. If education is correlated with immigration and affects $gdp$, the immigration coefficient may capture part of this effect, leading to biased OLS estimates.
+
+<b>Relationship between unbiasedness of a coefficient estimator and $R^2$</b><br>
+Unbiasedness of an estimator depends on the assumption $E(u \mid X) = 0$. In contrast, $R^2$ measures how much of the variation in the dependent variable is explained by the model. Therefore, unbiasedness and predictive power are not directly related and a model can have a high $R^2$ while the coefficient estimates are still biased.
+
+
+## Exercise 4 - Univariate model without a constant
+
+We state the formula without the constant $\beta_0$ as $$
+gdp_i = \beta_1 \, surname_i + u_i
+$$
+
+```{r}
+
+# Estimate the regression of gdp on surname without an intercept (-1)
+lm(gdp ~ surname - 1, data = df)
+
+```
+
+<b>Why did the coefficient on surname change compared to subexercise 2?</b><br>
+The coefficient changes because the regression is estimated without an intercept, forcing the regression line to pass through the origin. In this case, the OLS estimator simplifies from $\hat{\beta}_1 = \frac{\sum (x_i-\bar{x})(y_i-\bar{y})}{\sum (x_i-\bar{x})^2}$ to $\hat{\beta}_1 = \frac{\sum x_i y_i}{\sum x_i^2}$, which changes the estimated slope (from 449,550 to 532,247).
+
+
+## Exercise 5 - Code your own OLS estimator
+
+We estimate the parameters of the univariate regression model
+
+$$
+y_i = \beta_0 + \beta_1 x_i + u_i .
+$$
+
+Using the OLS formulas, the slope coefficient is given by
+
+$$
+\hat{\beta}_1 =
+\frac{\sum_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y})}
+{\sum_{i=1}^{N}(x_i-\bar{x})^2}.
+$$
+
+The intercept is then calculated as
+
+$$
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}.
+$$
+
+In our application, we regress `gdp` (as Y) on `surname` (as X), including an intercept. 
+Thus, the vectors `gdp` and `surname` are used as inputs to compute the OLS estimators using the formulas above.
+
+```{r}
+
+estimate_ols <- function(y, x) {
+  
+  # Compute the OLS slope coefficient beta_1 using the analytical formula above
+  beta_1 <- sum((x - mean(x)) * (y - mean(y))) / sum((x - mean(x))^2)
+  
+  # Compute the intercept beta_0
+  beta_0 <- mean(y) - beta_1 * mean(x)
+  
+  # Return the estimated coefficients as a named vector
+  return(c(beta_0 = beta_0, beta_1 = beta_1))
+}
+
+estimate_ols(df$gdp, df$surname)
+
+```
+
+<b>Verification against the lm() function</b><br>
+The manually computed coefficients are virtually identical to those obtained with `lm()` in Exercise 2. This confirms that our implementation correctly reproduces the OLS estimators.
+
+
+<b>Modification of function</b><br>
+We extend our OLS function by adding the boolean argument `add_constant`, which allows us to estimate the regression either with or without an intercept.
+
+```{r}
+
+    #In this case "false" -> in order to verify beta_1 with the exercise 3 above
+estimate_ols_modified <- function(y, x, add_constant = FALSE) { 
+  
+  if (add_constant == TRUE) {
+    
+    # OLS with intercept
+    beta_1 <- sum((x - mean(x)) * (y - mean(y))) / sum((x - mean(x))^2)
+    beta_0 <- mean(y) - beta_1 * mean(x)
+    
+    return(c(beta_0 = beta_0, beta_1 = beta_1))
+    
+  } else {
+    
+    # OLS without intercept
+    beta_1 <- sum(x * y) / sum(x^2)
+    
+    return(beta_1)
+  }
+}
+
+estimate_ols_modified(df$gdp, df$surname)
+
+```
+
+<b>Verification with result in subexercise 4</b><br>
+The estimated coefficient obtained with `add_constant = FALSE` is identical to the result from `lm(gdp ~ surname - 1, data = df)` in subexercise 4 (532247), confirming that the implementation correctly reproduces the OLS estimator for the model without an intercept.
+
+<br>
+<br>
+
+
+
+
+
 
 
 
