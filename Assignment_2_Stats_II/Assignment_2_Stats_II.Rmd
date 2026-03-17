@@ -15,7 +15,7 @@ library(summarytools)
 library(skimr)
 ```
 ## Exercise 1 - Data Preparation
-We imported the datasets using `read_delim()` and `read_csv()` from the `readr` package to handle different separators. We then used `skim_without_charts` from the `skimr` package to automatically check the data without the graphics. The difference in row counts gives us a first hint, that there might be a mismatch in the number of cantons. This summary also shows us, that there are no missing values. 
+We imported the datasets using `read_delim()` and `read_csv()` from the `readr` package to handle different separators. We then used `skim_without_charts` from the `skimr` package to automatically check the data without the graphics. The difference in row counts gives us a first hint, that there might be a mismatch in the number of cantons. This summary also shows us, that there are no missing values in the variable surname. 
 ```{r, message=FALSE, results='hide'}
 cantons<- read_delim("ps2_cantons_cleaned.csv", delim = ";")
 surnames<- read_csv("ps2_cantons_surnames.csv")
@@ -31,7 +31,7 @@ surnames <- surnames %>%
 surnames %>% 
   anti_join(cantons, by = "canton")
 ```
-In this step, we harmonized the naming convention by recoding "Sankt Gallen" to "St. Gallen" in order to match in both datasets and filtered out the "Sri Lanka" entry to ensure the surnames dataset exclusively contains valid Swiss cantons for the subsequent join. After performing the merge, we used `select()` to retain only the essential variables for analysis: GDP, population, immigration, and the newly calculated surname shares. We then verified the integrity of the join by confirming there are zero missing values and that all 26 distinct Swiss cantons are correctly represented in the final data frame.
+In this step, we harmonized the naming convention by recoding "Sankt Gallen" to "St. Gallen" in order to match in both datasets and filtered out the "Sri Lanka" entry to ensure the surnames dataset exclusively contains valid Swiss cantons for the subsequent join. After performing the merge using `left_join`, we used `select()` to retain only the essential variables for analysis: GDP, population, immigration, and the newly calculated surname shares. We then verified the integrity of the join by confirming there are zero missing values and that all 26 distinct Swiss cantons are correctly represented in the final data frame.
 ```{r}
 surnames <- surnames %>%
   mutate(canton = recode(canton, "Sankt Gallen" = "St. Gallen")) %>%
@@ -43,6 +43,7 @@ df <- cantons %>% #Merge the surname dataset into the canton dataset
 
 sum(is.na(df$surname))          
 n_distinct(cantons$canton)
+print(cantons$canton)
 ```
 ## Exercise 2 - Estimation of an univariate model
 The specific regression equation for this problem is:
@@ -55,10 +56,10 @@ summary(model)
 ### Results
 **Intercept $\hat{\beta}_0 = 10,077.28$:** A canton with a `surname` share of zero is predicted to have a GDP of CHF 10,077 million. This is not meaningful in practice since all cantons have some share of these surnames.
 
-**Slope $\hat{\beta}_1 = 449,550$:** A 1 percentage point increase (0,01 unit) in the combined Mueller/Maier surname share is associated with a predicted GDP increase of CHF 4'495,50 million. This reflects that larger cantons naturally have both more people with common surnames and higher total GDP, so the relationship mainly captures canton size rather than a causal effect of surnames.
+**Slope $\hat{\beta}_1 = 449,550$:** A 1 percentage point increase (0,01 unit) in the combined Mueller/Maier surname share is associated with a predicted GDP increase of CHF 4,495.50 million. This reflects that larger cantons naturally have both more people with common surnames and higher total GDP, so the relationship mainly captures canton size rather than a causal effect of surnames.
 
 
-We use the average `surname` share across all 26 cantons to predict GDP at a typical canton-level surname share.
+We use the average `surname` share across all 26 cantons to predict GDP at a typical canton-level surname share. As seen below, a canton with the average Mueller/Maier surname share is predicted to have a GDP of CHF 28,656.46 million. 
 ```{r}
 avg_surname <- mean(df$surname)
 predicted_gdp <- predict(model, newdata = data.frame(surname = avg_surname))
@@ -77,7 +78,7 @@ We estimate the regression of $gdp$ on $\log(\text{immigration})$ and compute th
 model_log <- lm(gdp ~ log(immigration), data = df)
 summary(model_log)
 
-# Define R² from the population model estimated in Exercise 2
+# Fetch R² from the population model estimated in Exercise 2
 r_squared_surname <- summary(model)$r.squared
 
 # Create a small table comparing the R² values of both models
@@ -94,7 +95,7 @@ r2_table
 $R^2$ measures the proportion of the variation in $y$ that is explained by the regression model. A higher $R^2$ indicates greater explanatory power of the model.
 
 <b>What amount of variation in `gdp` is explained?</b><br>
-The surname model explains about 64.3\% of the variation in $gdp$, while the log(immigration) model explains about 60.5\%. Thus, the surname model has higher explanatory power.
+The surname model explains about 64.3\% of the variation in $gdp$, while the log(immigration) model explains about 60.5\%. Thus, the surname model has the higher explanatory power of the two.
 
 <b>Unbiasedness of the Estimators for Surname and Immigration</b><br>
 The OLS estimators are unbiased if the assumption $E(u \mid X) = 0$ holds (SLR.4), meaning that the error term has an average value of zero for any given value of $X$. This requires that the explanatory variable is not systematically related to omitted factors that affect $gdp$.
@@ -168,7 +169,7 @@ estimate_ols(df$gdp, df$surname)
 ```
 
 <b>Verification against the lm() function</b><br>
-The manually computed coefficients are virtually identical to those obtained with `lm()` in Exercise 2. This confirms that our implementation correctly reproduces the OLS estimators.
+The manually computed coefficients are virtually identical to those obtained with `lm()` in Exercise 2 $(\hat{\beta}_1 = 449,550)$. This confirms that our implementation correctly reproduces the OLS estimators.
 
 
 <b>Modification of function</b><br>
@@ -201,7 +202,7 @@ estimate_ols_modified(df$gdp, df$surname)
 ```
 
 <b>Verification with result in subexercise 4</b><br>
-The estimated coefficient obtained with `add_constant = FALSE` is identical to the result from `lm(gdp ~ surname - 1, data = df)` in subexercise 4 (532247), confirming that the implementation correctly reproduces the OLS estimator for the model without an intercept.
+The estimated coefficient obtained with `add_constant = FALSE` is identical to the result from `lm(gdp ~ surname - 1, data = df)` in subexercise 4 $(\hat{\beta}_1 = 532,247)$, confirming that the implementation correctly reproduces the OLS estimator for the model without an intercept.
 
 <br>
 <br>
