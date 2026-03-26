@@ -1,0 +1,30 @@
+---
+title: "Assignment_3_Stats_II_Group_22"
+author:
+- "Maik David Klaiber (22-482-426)"
+- "Jonas Weber (24-621-484)"
+- "Yann Rochaix (24-622-276)"
+date: "`r format(Sys.Date(), '%d.%m.%Y')`"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+
+```
+
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
