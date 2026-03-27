@@ -64,10 +64,47 @@ summary(model1)
 - $\hat{\beta}_2$ (Income parents): A one-unit ($1,000) increase in combined parental income is associated with a $\hat{\beta}_2$ change in the probability of working in medicine, holding travel time constant.
 
 
+#### Comparison of the two regressors
+From the previous sub exercise, this model accounts for both travel time and parental income:$$\text{medicine}_i = \beta_0 + \beta_1 \text{travel\_time}_i + \beta_2 \text{income\_parents}_i + u_i$$
 
+From the current sub exercise, this model focuses solely on the relationship with parental income:$$\text{medicine}_i = \delta_0 + \delta_1 \text{income\_parents}_i + v_i$$
+```{r}
+model2 <- lm(medicine_bin ~ income_parents, data = df)
 
+summary(model1)
+summary(model2)
+```
+The coefficient on income_parents differs substantially across models: $\hat{\beta}_2 = 0.0002$ ($p = 0.141$) in model (ii) versus $\hat{\delta}_1 = 0.0008$ $p<0.001$ in model (iii).
 
+The estimates are both statistically and economically different — the coefficient is approximately four times larger in the simple regression (model2) than in the multiple regression (model1) and switches from insignificant to highly significant. This is consistent with omitted variable bias: `travel_time` is negatively correlated with `income_parents` (wealthier individuals live closer to Country B) and negatively affects the probability of working in medicine. Omitting it causes its effect to be absorbed into the `income_parents` coefficient, biasing it upward.
 
+#### Is `region` a better variable than `travel_time`?
+Using `region` instead of `travel_time` would likely answer our research question less well. travel_time is a continuous variable that directly measures proximity to Country B's high-income medical industry, capturing meaningful variation across individuals.<br>
+`region`, by contrast, is a categorical variable with codes 1–15 that groups individuals into broad geographic areas. This aggregation discards within-region variation in actual travel times — two individuals in the same region may face very different travel times to Country B. Furthermore, `travel_time` has a direct economic interpretation (each additional hour reduces the probability of working in medicine by 4.9 percentage points), whereas region codes have no inherent ordering or magnitude. Therefore, `travel_time` is a more precise and interpretable proxy for geographic proximity to the medical labour market.<br>
 
+#### test whether `income_parents` is correlated with `travel_time`
 
+To test whether `travel_time` and `income_parents` are correlated, 
+we estimate the following regression:
+
+$${income\_parents}_i = \gamma_0 + \gamma_1{travel\_time}_i + e_i$$
+
+The null and alternative hypotheses are:
+
+- $H_0: \gamma_1 = 0$ (no correlation between travel time and parental income)
+- $H_1: \gamma_1 \neq 0$ (correlation exists)
+
+The t-statistic is constructed as:
+
+$$t = \frac{\hat{\gamma}_1}{SE(\hat{\gamma}_1)}$$
+```{r}
+model_corr <- lm(income_parents ~ travel_time, data = df)
+summary(model_corr)
+```
+
+**Conclusion:** The estimated coefficient is $\hat{\gamma}_1 = \text{[value]}$ 
+with a t-statistic of $-58.52$  and p-value of $< 0.001$.  Since $p<0.05$, 
+we reject $H_0$ and conclude that `travel_time` and 
+`income_parents` are significantly negatively correlated. 
+This supports the omitted variable bias argument in 2(iii).
 
