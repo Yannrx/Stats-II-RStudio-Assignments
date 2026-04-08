@@ -34,18 +34,13 @@ $$
 \delta_1 = \beta_1
 $$
 
-Therefore, the OLS estimators satisfy:
+Therefore, the OLS estimators satisfy $\hat{\delta}_1 = \hat{\beta}_1$. Thus, while the slope remains unchanged ($\hat{\delta}_1 = \hat{\beta}_1$), the intercept shifts such that $\hat{\delta}_0 = \hat{\beta}_0 + 10\hat{\beta}_1$.
 
-$$
-\hat{\delta}_1 = \hat{\beta}_1
-$$
+<br>
 
 #### What happens to the OLS coefficients, when a constant is added or subtracted?
 
-The slope coefficient does not change:
-$$
-\hat{\delta}_1 = \hat{\beta}_1
-$$
+As seen above, the slope coefficient does not change ($\hat{\delta}_1 = \hat{\beta}_1$).
 
 To see how the intercept changes, substitute $Q_i = X_i - c$ into the model:
 $$
@@ -67,12 +62,7 @@ $$
 \hat{\delta}_0 = \hat{\beta}_0 + c\hat{\beta}_1
 $$
 
-Thus, subtracting a constant shifts the regression line but does not affect its slope.
-
-The relationship between $\hat{\delta}_0$ and $\hat{\beta}_0$ remains unchanged and is given by the deterministic linear relationship:
-$$
-\hat{\delta}_0 = \hat{\beta}_0 + c\hat{\beta}_1
-$$
+Thus, adding or subtracting a constant from a regressor does not affect the slope, and the relationship between $\hat{\delta}_0$ and $\hat{\beta}_0$ does not change; it remains given by $\hat{\delta}_0 = \hat{\beta}_0 + c\hat{\beta}_1$.
 
 ## Exercise 2
 
@@ -97,21 +87,17 @@ df$income_parents <- df$income_parent1 + df$income_parent2
 <br>
 
 #### (ii) Writing the Regression Equation
+We write a regression equation to jointly investigate the relationship of medicine (as the outcome variable) with travel time and income parents (as the independent
+variables):
 
 $$medicine_i= \beta_0 + \beta_1travel\_time_i + \beta_2 income\_parents_i + u_i$$
-```{r, message=F}
-# Converting medicine to binary from text string
-df$medicine_bin <- ifelse(df$medicine == "Yes", 1, 0)
 
-model1 <- lm(medicine_bin ~ travel_time + income_parents, data = df)
-summary(model1)
-```
 **Interpretation of the coefficient parameters**
 
 
 
-- $\hat{\beta}_0$ (Intercept): The predicted probability of working in medicine for an individual with zero travel time and zero parental income.
-- $\hat{\beta}_1$ (Travel time): A one-hour increase in travel time to Country B from town of birth is associated with a $\hat{\beta}_1$ change in the probability of working in medicine, holding parental income constant.
+- $\hat{\beta}_0$ (Intercept): The predicted probability of working in the medical sector for an individual with zero travel time and zero parental income; however, this scenario is not economically meaningful, as zero values for these variables are unrealistic.
+- $\hat{\beta}_1$ (Travel time): A one-hour increase in travel time to Country B from town of birth is associated with a change of $\hat{\beta}_1$ percentage points in the probability of working in medicine, holding parental income constant.
 - $\hat{\beta}_2$ (Income parents): A one-unit ($1,000) increase in combined parental income is associated with a $\hat{\beta}_2$ change in the probability of working in medicine, holding travel time constant.
 <br><br>
 We assume that MLR.1-MLR.5 hold.
@@ -130,34 +116,42 @@ From the current sub exercise, this model focuses solely on the relationship wit
 $$
 medicine_i = \delta_0 + \delta_1 \, income\_parents_i + v_i
 $$
+The estimation of the two models yield:
 ```{r}
+# Converting medicine to binary from text string
+df$medicine_bin <- ifelse(df$medicine == "Yes", 1, 0)
+
+model1 <- lm(medicine_bin ~ travel_time + income_parents, data = df)
 model2 <- lm(medicine_bin ~ income_parents, data = df)
 
 summary(model1)
 summary(model2)
 ```
-The coefficient on `income_parents` differs substantially across models: 
-$\hat{\beta}_2 = 0.0002$ ($p = 0.141$) in model (ii) versus 
-$\hat{\delta}_1 = 0.0008$ ($p < 0.001$) in model (iii).
 
-At the 5\% significance level ($\alpha = 0.05$), the coefficient is not statistically significant in model (ii), but is statistically significant in model (iii). 
-The magnitude of the coefficient is also economically different, as it is approximately four times larger in the simple regression.
+Let us now compare the point estimates from our specification in part (ii) to those from
+(iii):
 
-This pattern is consistent with omitted variable bias. In particular, `travel_time` has a negative effect on the probability of working in medicine. 
-Omitted variable bias arises if the omitted variable is correlated with the included regressor, i.e.
-$$
-\text{Cov}(travel\_time, income\_parents) \neq 0
-$$
+|                              | Model (ii) | Model (iii) |
+|:-----------------------------|:----------------------:|:--------------------------:|
+| Coefficient (income_parents) | $\hat{\beta}_2 \approx 0.0002$ | $\hat{\delta}_1 \approx 0.0008$ |
+| p-value                      | 0.141                  | < 0.001                    |
+| Statistically significant ($\alpha=5\%$) | No                     | Yes                        |
+| Economic relevance           | Small                  | Substantially larger (~4x) |
 
-A plausible assumption is that individuals with higher parental income tend to live closer (i.e., have lower `travel_time`), implying a negative correlation between `travel_time` and `income_parents`. 
-Under this assumption, omitting `travel_time` biases the coefficient on `income_parents` upward.
 
-Thus, the difference in coefficients across models can be explained by the omission of a relevant variable.
+This pattern is consistent with omitted variable bias. In the full model (ii), `travel_time` is included and captures its negative effect on the probability of working in medicine. In contrast, in model (iii), `travel_time` is omitted and only `income_parents` is included. 
+
+If travel_time is negatively correlated with `income_parents`, i.e., $\text{Cov}(travel\_time, income\_parents) \neq 0,$ omitting `travel_time` in model (iii) leads to an upward bias in the estimated coefficient on `income_parents`. This explains why the coefficient is larger in the simple model.
+
 <br>
 
 #### (iv) Is `region` a better variable than `travel_time`?
-Using `region` instead of `travel_time` would likely answer our research question less well. travel_time is a continuous variable that directly measures proximity to Country B's high-income medical industry, capturing meaningful variation across individuals.<br>
-`region`, by contrast, is a categorical variable with codes 1–15 that groups individuals into broad geographic areas. This aggregation discards within-region variation in actual travel times — two individuals in the same region may face very different travel times to Country B. Furthermore, `travel_time` has a direct economic interpretation (each additional hour reduces the probability of working in medicine by 4.9 percentage points), whereas region codes have no inherent ordering or magnitude. Therefore, `travel_time` is a more precise and interpretable proxy for geographic proximity to the medical labour market.<br>
+
+Using `region` instead of `travel_time` would likely be less informative for our research question. `travel_time` is a continuous variable that directly measures proximity to Country B's high-income medical industry, capturing meaningful variation across individuals. 
+
+By contrast, `region` is a categorical variable (codes 1–15) that groups individuals into broad geographic areas, thereby discarding within-region variation in actual travel times—two individuals in the same region may face very different travel times to Country B. Furthermore, `travel_time` has a direct economic interpretation (each additional hour is associated with an estimated 4.9 percentage point decrease in the probability of working in medicine), whereas region codes have no inherent ordering or magnitude. 
+
+While `region` may capture broader regional characteristics, such as local infrastructure or access to medical facilities, which could also influence career choices, these factors are not directly observed and `region` serves only as a coarse proxy for them. Therefore, `travel_time` remains a more precise and interpretable measure of geographic proximity to the medical labour market.
 
 <br>
 
@@ -191,15 +185,12 @@ summary(model_corr)
 
 **Conclusion** 
 
-The estimated coefficient is $\hat{\gamma}_1 = -17.0877$, 
-with a t-statistic of $-58.52$ and a p-value $< 0.001$. 
-At the 5\% significance level ($\alpha = 0.05$), we reject $H_0$ and conclude that 
-`travel_time` and `income_parents` are statistically significantly negatively correlated. Alternatively, comparing the t-statistic to the critical value, we have 
-$|t| = 58.52 > t_{crit} \approx 1.96$ (for $\alpha = 0.05$), 
-leading to the same conclusion of rejecting $H_0$. 
 
-This provides evidence that `travel_time` is correlated with `income_parents`, 
-supporting the omitted variable bias argument in part 2(iii).
+The estimated coefficient is $\hat{\gamma}_1 = -17.0877$ with a t-statistic of -58.52. At the 5% significance level, the critical value is approximately $t_{crit} \approx 1.96$ (two-tailed). Since $|t| = 58.52 \gg 1.96$, we reject $H_0$ and conclude that travel_time and income_parents are statistically significantly negatively correlated. 
+
+This suggests that travel_time is correlated with income_parents, supporting the omitted variable bias argument in part 2(iii).
+
+
 
 <br>
 
@@ -231,3 +222,4 @@ where $q = 2$ is the number of restrictions. The test measures how much the mode
 
 The decision is based on comparing the F-statistic to the critical value at the chosen significance level. If $F > F_{crit}$, we reject $H_0$, implying that at least one coefficient is different from zero and the variables are jointly significant.
 
+<br>
