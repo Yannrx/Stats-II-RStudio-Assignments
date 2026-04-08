@@ -15,22 +15,68 @@ library(skimr)
 
 ## Exercise 1
 
-Since $Q_i = X_i - 10$, substituting into $Y_{i,1} = \delta_0 + \delta_1 Q_i + u_i$ gives:
-$$Y_{i,1} = \delta_0 + \delta_1(X_i - 10) + u_i = \delta_0 - 10\delta_1 + \delta_1 X_i + u_i$$
+Since $Q_i = X_i - 10$, substituting into 
+$Y_{i,1} = \delta_0 + \delta_1 Q_i + u_i$ gives:
 
-Comparing and matching coefficients on $X_i$ with the original model: $Y_{i,1} = \beta_0 + \beta_1 X_i + u_i$, we get:
-$$\hat{\delta}_1 = \hat{\beta}_1$$
-And when matching the constants: $\hat{\delta}_0 = \hat{\beta}_0 + 10\hat{\beta}_1$, then rearranging:
-$$\hat{\delta}_0 = \hat{\beta}_0 + 10\hat{\beta}_1$$
+$$
+Y_{i,1} = \delta_0 + \delta_1 (X_i - 10) + u_i
+$$
+
+Expanding the brackets and rearranging:
+
+$$
+Y_{i,1} = (\delta_0 - 10\delta_1) + \delta_1 X_i + u_i
+$$
+
+Comparing with $Y_{i,1} = \beta_0 + \beta_1 X_i + u_i$ implies:
+
+$$
+\delta_1 = \beta_1
+$$
+
+Therefore, the OLS estimators satisfy:
+
+$$
+\hat{\delta}_1 = \hat{\beta}_1
+$$
 
 #### What happens to the OLS coefficients, when a constant is added or subtracted?
-The slope does not change $\hat{\delta}_1 = \hat{\beta}_1$ when subtracting a constant from a regressor. 
 
-Only the intercept will change $\hat{\delta}_0 = \hat{\beta}_0 + 10\hat{\beta}_1$ when the regressor gets transformed. 
+The slope coefficient does not change:
+$$
+\hat{\delta}_1 = \hat{\beta}_1
+$$
+
+To see how the intercept changes, substitute $Q_i = X_i - c$ into the model:
+$$
+Y_i = \hat{\delta}_0 + \hat{\delta}_1 (X_i - c) + u_i
+$$
+
+Rearranging:
+$$
+Y_i = (\hat{\delta}_0 - c\hat{\delta}_1) + \hat{\delta}_1 X_i + u_i
+$$
+
+Comparing with $Y_i = \hat{\beta}_0 + \hat{\beta}_1 X_i + u_i$ yields:
+$$
+\hat{\beta}_0 = \hat{\delta}_0 - c\hat{\delta}_1
+$$
+
+Solving for the intercept:
+$$
+\hat{\delta}_0 = \hat{\beta}_0 + c\hat{\beta}_1
+$$
+
+Thus, subtracting a constant shifts the regression line but does not affect its slope.
+
+The relationship between $\hat{\delta}_0$ and $\hat{\beta}_0$ remains unchanged and is given by the deterministic linear relationship:
+$$
+\hat{\delta}_0 = \hat{\beta}_0 + c\hat{\beta}_1
+$$
 
 ## Exercise 2
 
-#### Importing, exploring and cleaning the dataset
+#### (i) Importing, exploring and cleaning the dataset
 
 ```{r, results='hide'}
 df <- read.csv("distances_birthtown_up.csv")
@@ -48,7 +94,9 @@ df$travel_time[df$travel_time<0] <- NA
 df$income_parents <- df$income_parent1 + df$income_parent2
 ```
 
-#### Writing the Regression Equation
+<br>
+
+#### (ii) Writing the Regression Equation
 
 $$medicine_i= \beta_0 + \beta_1travel\_time_i + \beta_2 income\_parents_i + u_i$$
 ```{r, message=F}
@@ -58,36 +106,69 @@ df$medicine_bin <- ifelse(df$medicine == "Yes", 1, 0)
 model1 <- lm(medicine_bin ~ travel_time + income_parents, data = df)
 summary(model1)
 ```
-#### Interpretation of the coefficient parameters
+**Interpretation of the coefficient parameters**
+
+
+
 - $\hat{\beta}_0$ (Intercept): The predicted probability of working in medicine for an individual with zero travel time and zero parental income.
 - $\hat{\beta}_1$ (Travel time): A one-hour increase in travel time to Country B from town of birth is associated with a $\hat{\beta}_1$ change in the probability of working in medicine, holding parental income constant.
 - $\hat{\beta}_2$ (Income parents): A one-unit ($1,000) increase in combined parental income is associated with a $\hat{\beta}_2$ change in the probability of working in medicine, holding travel time constant.
+<br><br>
+We assume that MLR.1-MLR.5 hold.
 
+<br>
 
-#### Comparison of the two regressors
-From the previous sub exercise, this model accounts for both travel time and parental income:$$\text{medicine}_i = \beta_0 + \beta_1 \text{travel\_time}_i + \beta_2 \text{income\_parents}_i + u_i$$
+#### (iii) Comparison of the two regressors
+From the previous sub exercise, this model accounts for both travel time and parental income:
 
-From the current sub exercise, this model focuses solely on the relationship with parental income:$$\text{medicine}_i = \delta_0 + \delta_1 \text{income\_parents}_i + v_i$$
+$$
+medicine_i = \beta_0 + \beta_1 \, travel\_time_i + \beta_2 \, income\_parents_i + u_i
+$$
+
+From the current sub exercise, this model focuses solely on the relationship with parental income:
+
+$$
+medicine_i = \delta_0 + \delta_1 \, income\_parents_i + v_i
+$$
 ```{r}
 model2 <- lm(medicine_bin ~ income_parents, data = df)
 
 summary(model1)
 summary(model2)
 ```
-The coefficient on income_parents differs substantially across models: $\hat{\beta}_2 = 0.0002$ ($p = 0.141$) in model (ii) versus $\hat{\delta}_1 = 0.0008$ $p<0.001$ in model (iii).
+The coefficient on `income_parents` differs substantially across models: 
+$\hat{\beta}_2 = 0.0002$ ($p = 0.141$) in model (ii) versus 
+$\hat{\delta}_1 = 0.0008$ ($p < 0.001$) in model (iii).
 
-The estimates are both statistically and economically different — the coefficient is approximately four times larger in the simple regression (model2) than in the multiple regression (model1) and switches from insignificant to highly significant. This is consistent with omitted variable bias: `travel_time` is negatively correlated with `income_parents` (wealthier individuals live closer to Country B) and negatively affects the probability of working in medicine. Omitting it causes its effect to be absorbed into the `income_parents` coefficient, biasing it upward.
+At the 5\% significance level ($\alpha = 0.05$), the coefficient is not statistically significant in model (ii), but is statistically significant in model (iii). 
+The magnitude of the coefficient is also economically different, as it is approximately four times larger in the simple regression.
 
-#### Is `region` a better variable than `travel_time`?
+This pattern is consistent with omitted variable bias. In particular, `travel_time` has a negative effect on the probability of working in medicine. 
+Omitted variable bias arises if the omitted variable is correlated with the included regressor, i.e.
+$$
+\text{Cov}(travel\_time, income\_parents) \neq 0
+$$
+
+A plausible assumption is that individuals with higher parental income tend to live closer (i.e., have lower `travel_time`), implying a negative correlation between `travel_time` and `income_parents`. 
+Under this assumption, omitting `travel_time` biases the coefficient on `income_parents` upward.
+
+Thus, the difference in coefficients across models can be explained by the omission of a relevant variable.
+<br>
+
+#### (iv) Is `region` a better variable than `travel_time`?
 Using `region` instead of `travel_time` would likely answer our research question less well. travel_time is a continuous variable that directly measures proximity to Country B's high-income medical industry, capturing meaningful variation across individuals.<br>
 `region`, by contrast, is a categorical variable with codes 1–15 that groups individuals into broad geographic areas. This aggregation discards within-region variation in actual travel times — two individuals in the same region may face very different travel times to Country B. Furthermore, `travel_time` has a direct economic interpretation (each additional hour reduces the probability of working in medicine by 4.9 percentage points), whereas region codes have no inherent ordering or magnitude. Therefore, `travel_time` is a more precise and interpretable proxy for geographic proximity to the medical labour market.<br>
 
-#### test whether `income_parents` is correlated with `travel_time`
+<br>
+
+#### (v) Test whether `income_parents` is correlated with `travel_time`
 
 To test whether `travel_time` and `income_parents` are correlated, 
 we estimate the following regression:
 
-$${income\_parents}_i = \gamma_0 + \gamma_1{travel\_time}_i + e_i$$
+$$
+income\_parents_i = \gamma_0 + \gamma_1 travel\_time_i + e_i
+$$
 
 The null and alternative hypotheses are:
 
@@ -96,15 +177,57 @@ The null and alternative hypotheses are:
 
 The t-statistic is constructed as:
 
-$$t = \frac{\hat{\gamma}_1}{SE(\hat{\gamma}_1)}$$
+$$
+t = \frac{\hat{\gamma}_1 - 0}{SE(\hat{\gamma}_1)}
+$$
+
+We test at the 5\% significance level ($\alpha = 0.05$).
+
+
 ```{r}
 model_corr <- lm(income_parents ~ travel_time, data = df)
 summary(model_corr)
 ```
 
-**Conclusion:** The estimated coefficient is $\hat{\gamma}_1 = \text{[value]}$ 
-with a t-statistic of $-58.52$  and p-value of $< 0.001$.  Since $p<0.05$, 
-we reject $H_0$ and conclude that `travel_time` and 
-`income_parents` are significantly negatively correlated. 
-This supports the omitted variable bias argument in 2(iii).
+**Conclusion** 
+
+The estimated coefficient is $\hat{\gamma}_1 = -17.0877$, 
+with a t-statistic of $-58.52$ and a p-value $< 0.001$. 
+At the 5\% significance level ($\alpha = 0.05$), we reject $H_0$ and conclude that 
+`travel_time` and `income_parents` are statistically significantly negatively correlated. Alternatively, comparing the t-statistic to the critical value, we have 
+$|t| = 58.52 > t_{crit} \approx 1.96$ (for $\alpha = 0.05$), 
+leading to the same conclusion of rejecting $H_0$. 
+
+This provides evidence that `travel_time` is correlated with `income_parents`, 
+supporting the omitted variable bias argument in part 2(iii).
+
+<br>
+
+#### (vi) Test whether `travel_time` and `income_parents` are jointly significant
+
+We consider the regression model:
+
+$$
+medicine_i = \beta_0 + \beta_1 \, travel\_time_i + \beta_2 \, income\_parents_i + u_i
+$$
+
+We test whether `travel_time` and `income_parents` are jointly significant.
+
+The null and alternative hypotheses are:
+
+- $H_0$: $\beta_1 = 0$ and $\beta_2 = 0$  
+  (no joint effect)
+
+- $H_1$: $\beta_1 \neq 0 \ \text{or} \ \beta_2 \neq 0$  
+  (At least one of the coefficients is different from zero i.e. joint significance)
+
+We use an F-test comparing the unrestricted model (including both variables) to the restricted model (excluding them). The test statistic is:
+
+$$
+F = \frac{(SSR_r - SSR_{ur})/q}{SSR_{ur}/(n - k - 1)}
+$$
+
+where $q = 2$ is the number of restrictions. The test measures how much the model fit worsens when the restrictions are imposed.
+
+The decision is based on comparing the F-statistic to the critical value at the chosen significance level. If $F > F_{crit}$, we reject $H_0$, implying that at least one coefficient is different from zero and the variables are jointly significant.
 
