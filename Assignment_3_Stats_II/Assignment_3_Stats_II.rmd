@@ -157,8 +157,8 @@ While `region` may capture broader regional characteristics, such as local infra
 
 #### (v) Test whether `income_parents` is correlated with `travel_time`
 
-To test whether `travel_time` and `income_parents` are correlated, 
-we estimate the following regression:
+
+To test whether `travel_time` and `income_parents` are correlated, we estimate the following regression:
 
 $$
 income\_parents_i = \gamma_0 + \gamma_1 travel\_time_i + e_i
@@ -166,30 +166,54 @@ $$
 
 The null and alternative hypotheses are:
 
-- $H_0: \gamma_1 = 0$ (no correlation between travel time and parental income)
-- $H_1: \gamma_1 \neq 0$ (correlation exists)
+- $H_0$: $\gamma_1 = 0$ (no correlation)  
+- $H_1$: $\gamma_1 \neq 0$ (correlation exists)
 
-The t-statistic is constructed as:
-
+The t-statistic is:
 $$
-t = \frac{\hat{\gamma}_1 - 0}{SE(\hat{\gamma}_1)}
+t = \frac{\hat{\gamma}_1}{SE(\hat{\gamma}_1)}
 $$
+where \(SE(\hat{\gamma}_1)\) is the standard error of the estimated coefficient \(\hat{\gamma}_1\), measuring the sampling variability of the estimate.
 
-We test at the 5\% significance level ($\alpha = 0.05$).
-
+We conduct the test at the 5% significance level (\(\alpha = 0.05\)).
 
 ```{r}
+# Estimate model
 model_corr <- lm(income_parents ~ travel_time, data = df)
-summary(model_corr)
+
+# Extract coefficient and standard error
+beta_hat <- coef(model_corr)["travel_time"]
+se_beta  <- summary(model_corr)$coefficients["travel_time", "Std. Error"]
+
+# Compute t-statistic manually
+t_stat <- beta_hat / se_beta
+
+# Degrees of freedom
+n <- nrow(df)
+k <- length(coef(model_corr)) - 1
+df_t <- n - k - 1
+
+# Critical value (two-sided, 5%)
+t_crit <- qt(0.975, df_t)
+
+# Output
+t_stat
+t_crit
+
 ```
 
-**Conclusion** 
+```{r}
+# Decision rule
+if(abs(t_stat) > t_crit){
+  "Reject H0"
+} else {
+  "Do not reject H0"
+}
+```
 
+The computed t-statistic is compared to the critical value from the t-distribution table.
 
-The estimated coefficient is $\hat{\gamma}_1 = -17.0877$ with a t-statistic of -58.52. At the 5% significance level, the critical value is approximately $t_{crit} \approx 1.96$ (two-tailed). Since $|t| = 58.52 \gg 1.96$, we reject $H_0$ and conclude that travel_time and income_parents are statistically significantly negatively correlated. 
-
-This suggests that travel_time is correlated with income_parents, supporting the omitted variable bias argument in part 2(iii).
-
+Since \(|t| = 58.52 > t_{crit} \approx 1.96\) (for a two-sided test at the 5\% significance level and large degrees of freedom), we reject \(H_0\) at the 5\% significance level. This implies that `travel_time` and `income_parents` are statistically significantly correlated.
 
 
 <br>
@@ -201,25 +225,74 @@ We consider the regression model:
 $$
 medicine_i = \beta_0 + \beta_1 \, travel\_time_i + \beta_2 \, income\_parents_i + u_i
 $$
-
-We test whether `travel_time` and `income_parents` are jointly significant.
-
 The null and alternative hypotheses are:
 
-- $H_0$: $\beta_1 = 0$ and $\beta_2 = 0$  
+- $H_0$: $\beta_{1} = 0$ and $\beta_{2} = 0$  
   (no joint effect)
 
-- $H_1$: $\beta_1 \neq 0 \ \text{or} \ \beta_2 \neq 0$  
-  (At least one of the coefficients is different from zero i.e. joint significance)
+- $H_1$: $\beta_{1} \neq 0 \ \text{or} \ \beta_{2} \neq 0$  
+  (at least one coefficient is different from zero, i.e. joint significance)
 
-We use an F-test comparing the unrestricted model (including both variables) to the restricted model (excluding them). The test statistic is:
+We use an F-test comparing the unrestricted model (including both variables) to the restricted model (excluding them).
 
+The test statistic is:
 $$
 F = \frac{(SSR_r - SSR_{ur})/q}{SSR_{ur}/(n - k - 1)}
 $$
+where \(q\) is the number of restrictions. In this case, \(q = 2\), since both coefficients are tested jointly.
 
-where $q = 2$ is the number of restrictions. The test measures how much the model fit worsens when the restrictions are imposed.
+We conduct the test at the 5% significance level (\(\alpha = 0.05\)). The critical value \(F_{crit}\) is obtained from the F-distribution table provided in the assignment, using \(q = 2\) numerator and \(n - k - 1\) denominator degrees of freedom.
 
-The decision is based on comparing the F-statistic to the critical value at the chosen significance level. If $F > F_{crit}$, we reject $H_0$, implying that at least one coefficient is different from zero and the variables are jointly significant.
+To implement the test, we estimate both models and compute the F-statistic manually in R using the residual sum of squares (SSR). 
+
+
+```{r}
+# Unrestricted model: includes both variables of interest
+model_ur <- lm(medicine_bin ~ travel_time + income_parents, data = df)
+
+# Restricted model: excludes both variables (only intercept)
+model_r  <- lm(medicine_bin ~ 1, data = df)
+
+# Compute residual sum of squares (SSR) for both models
+SSR_ur <- sum(resid(model_ur)^2)
+SSR_r  <- sum(resid(model_r)^2)
+
+# Number of restrictions
+q <- 2
+
+# Sample size
+n <- nrow(df)
+
+# Number of regressors in unrestricted model (excluding intercept)
+k <- length(coef(model_ur)) - 1
+
+# Compute F-statistic manually
+F_stat <- ((SSR_r - SSR_ur)/q) / (SSR_ur/(n - k - 1))
+
+# Critical value at 5% significance level
+F_crit <- qf(0.95, q, n - k - 1)
+
+# Output results
+F_stat
+F_crit
+
+```
+
+```{r}
+# Decision rule
+if(F_stat > F_crit){
+  "Reject H0"
+} else {
+  "Do not reject H0"
+}
+```
+
+<br>
+
+The computed F-statistic is 306.45, which is substantially larger than the critical value of 2.996 at the 5% significance level.
+
+Therefore, we reject the null hypothesis \(H_0\) at the 5% significance level. This implies that `travel_time` and `income_parents` are jointly statistically significant.
+
+
 
 <br>
