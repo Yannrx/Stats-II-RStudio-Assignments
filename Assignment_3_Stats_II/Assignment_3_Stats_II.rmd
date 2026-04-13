@@ -15,8 +15,22 @@ library(skimr)
 
 ## Exercise 1
 
-Since $Q_i = X_i - 10$, substituting into 
-$Y_{i,1} = \delta_0 + \delta_1 Q_i + u_i$ gives:
+We observe the variables $Y_{i,1}$, $Y_{i,2}$, and $X_i$, and estimate the following simple linear regressions:
+
+$$
+Y_{i,1} = \beta_0 + \beta_1 X_i + u_i
+$$
+
+$$
+Y_{i,2} = \alpha_0 + \alpha_1 X_i + v_i
+$$
+
+Next, we define the transformed variable:
+
+$$
+Q_i = X_i - 10
+$$
+Substituting $Q_i$ into $Y_{i,1}$ gives:
 
 $$
 Y_{i,1} = \delta_0 + \delta_1 (X_i - 10) + u_i
@@ -36,33 +50,37 @@ $$
 
 Therefore, the OLS estimators satisfy $\hat{\delta}_1 = \hat{\beta}_1$. Thus, while the slope remains unchanged ($\hat{\delta}_1 = \hat{\beta}_1$), the intercept shifts such that $$\hat{\delta}_0 = \hat{\beta}_0 + 10\hat{\beta}_1$$.
 
-<br>
 
-#### What happens to the OLS coefficients, when a constant is added or subtracted?
+
+**What happens to the OLS coefficients, when a constant is added or subtracted?**
 
 As seen above, the slope coefficient does not change ($\hat{\delta}_1 = \hat{\beta}_1$).
 
-To see how the intercept changes, substitute $Q_i = X_i - c$ into the model:
+To see how the intercept changes, substitute $Q_i = X_i + c$ into the model:
+
 $$
-Y_i = \hat{\delta}_0 + \hat{\delta}_1 (X_i - c) + u_i
+Y_{i,1} = \delta_0 + \delta_1 (X_i + c) + u_i
 $$
 
 Rearranging:
+
 $$
-Y_i = (\hat{\delta}_0 - c\hat{\delta}_1) + \hat{\delta}_1 X_i + u_i
+Y_{i,1} = (\delta_0 + c \delta_1) + \delta_1 X_i + u_i
 $$
 
-Comparing with $Y_i = \hat{\beta}_0 + \hat{\beta}_1 X_i + u_i$ yields:
+Comparing with $Y_i = \beta_0 + \beta_1 X_i + u_i$ yields:
+
 $$
-\hat{\beta}_0 = \hat{\delta}_0 - c\hat{\delta}_1
+\beta_0 = \delta_0 + c \delta_1
 $$
 
 Solving for the intercept:
+
 $$
-\hat{\delta}_0 = \hat{\beta}_0 + c\hat{\beta}_1
+\delta_0 = \beta_0 - c \beta_1
 $$
 
-Thus, adding or subtracting a constant from a regressor does not affect the slope, and the relationship between $\hat{\delta}_0$ and $\hat{\beta}_0$ does not change; it remains given by $\hat{\delta}_0 = \hat{\beta}_0 + c\hat{\beta}_1$.
+Thus, adding or subtracting a constant from a regressor does not affect the slope, and the relationship between $\delta_0$ and $\beta_0$ remains given by $\delta_0 = \beta_0 - c \beta_1$, where $c$ is an arbitrary constant.
 
 ## Exercise 2
 
@@ -94,9 +112,9 @@ $$medicine_i= \beta_0 + \beta_1travel\_time_i + \beta_2 income\_parents_i + u_i$
 
 **Interpretation of the coefficient parameters**
 
+Since medicine is a binary variable, this can be interpreted as a linear probability model.
 
-
-- $\hat{\beta}_0$ (Intercept): The predicted probability of working in the medical sector for an individual with zero travel time and zero parental income; however, this scenario is not economically meaningful, as zero values for these variables are unrealistic.
+- $\hat{\beta}_0$ (Intercept): The predicted probability of working in the medical sector for an individual with zero travel time and zero parental income; however, this scenario is not economically meaningful, as zero values for these variables are rather unrealistic.
 - $\hat{\beta}_1$ (Travel time): A one-hour increase in travel time to Country B from town of birth is associated with a change of $\hat{\beta}_1$ percentage points in the probability of working in medicine, holding parental income constant.
 - $\hat{\beta}_2$ (Income parents): A one-unit ($1,000) increase in combined parental income is associated with a $\hat{\beta}_2$ change in the probability of working in medicine, holding travel time constant.
 <br><br>
@@ -128,10 +146,12 @@ summary(model1)
 summary(model2)
 ```
 
+**Comparison**
+
 Let us now compare the point estimates from our specification in part (ii) to those from
 (iii):
 
-|                              | Model (ii) | Model (iii) |
+|                              | Model (ex. ii) | Model (ex. iii) |
 |:-----------------------------|:----------------------:|:--------------------------:|
 | Coefficient (income_parents) | $\hat{\beta}_2 \approx 0.0002$ | $\hat{\delta}_1 \approx 0.0008$ |
 | p-value                      | 0.141                  | < 0.001                    |
@@ -139,9 +159,9 @@ Let us now compare the point estimates from our specification in part (ii) to th
 | Economic relevance           | Small                  | Substantially larger (~4x) |
 
 
-This pattern is consistent with omitted variable bias. In the full model (ii), `travel_time` is included and captures its negative effect on the probability of working in medicine. In contrast, in model (iii), `travel_time` is omitted and only `income_parents` is included. 
+This pattern is consistent with omitted variable bias. In the full model (ex. ii), `travel_time` is included and captures its negative effect on the probability of working in medicine. In contrast, in model (ex. iii), `travel_time` is omitted and only `income_parents` is included. 
 
-If travel_time is negatively correlated with `income_parents`, i.e., $\text{Cov}(travel\_time, income\_parents) \neq 0,$ omitting `travel_time` in model (iii) leads to an upward bias in the estimated coefficient on `income_parents`. This explains why the coefficient is larger in the simple model.
+Assuming that `travel_time` is negatively correlated with `income_parents`, i.e., $\text{Cov}(travel\_time, income\_parents) < 0,$ omitting `travel_time` in model (ex. iii) leads to an upward bias in the estimated coefficient on `income_parents`. This explains why the coefficient is larger in the simple model (ex. iii).
 
 <br>
 
@@ -213,7 +233,7 @@ if(abs(t_stat) > t_crit){
 
 The computed t-statistic is compared to the critical value from the t-distribution table.
 
-Since \(|t| = 58.52 > t_{crit} \approx 1.96\) (for a two-sided test at the 5\% significance level and large degrees of freedom), we reject \(H_0\) at the 5\% significance level. This implies that `travel_time` and `income_parents` are statistically significantly correlated.
+Since \(|t| = 58.52 > t_{crit} \approx 1.96\) (for a two-sided test at the 5\% significance level and large degrees of freedom), we reject \(H_0\) at the 5\% significance level. This implies that `travel_time` and `income_parents` are statistically significantly negatively correlated.
 
 
 <br>
@@ -291,7 +311,7 @@ if(F_stat > F_crit){
 
 The computed F-statistic is 306.45, which is substantially larger than the critical value of 2.996 at the 5% significance level.
 
-Therefore, we reject the null hypothesis \(H_0\) at the 5% significance level. This implies that `travel_time` and `income_parents` are jointly statistically significant.
+Therefore, we reject the null hypothesis \(H_0\) at the 5% significance level. This implies that at least one of the coefficients on `travel_time` or `income_parents` is different from zero, i.e. the variables `travel_time` and `income_parents` are jointly statistically significant.
 
 
 
