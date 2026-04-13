@@ -263,7 +263,7 @@ where \(q\) is the number of restrictions. In this case, \(q = 2\), since both c
 
 We conduct the test at the 5% significance level (\(\alpha = 0.05\)). The critical value \(F_{crit}\) is obtained from the F-distribution table provided in the assignment, using \(q = 2\) numerator and \(n - k - 1\) denominator degrees of freedom.
 
-To implement the test, we estimate both models and compute the F-statistic manually in R using the residual sum of squares (SSR). 
+Computation of the F-statistic:
 
 
 ```{r}
