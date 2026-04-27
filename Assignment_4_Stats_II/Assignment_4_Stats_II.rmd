@@ -31,13 +31,13 @@ $\hat{\beta}_6$ (marr) = 0.4217
 
 ### b) $Age$ and $Age^2$
 
-**1.) Marginal effect of age on** $log(inc)$
+**1.) Marginal effect of age on $log(inc)$:**
 
-The marginal effect is: $\frac{\partial \log(inc)}{\partial age} = \beta_3 + 2\beta_4 age$. Evaluating this formula at $age=25$, $0.0512 + 2(-0.0006)(25) = 0.0212$ This means, that one additional year of age is associated with an approximate 2.12% increase in household income, ceteris paribus.
+- The marginal effect is: $\frac{\partial \log(inc)}{\partial age} = \beta_3 + 2\beta_4 age$. Evaluating this formula at $age=25$, $0.0512 + 2(-0.0006)(25) = 0.0212$ This means, that one additional year of age is associated with an approximate 2.12% increase in household income, ceteris paribus.
 
-**2.) turning point of** $age$
+**2.) turning point of $age$:**
 
-In order to find the turning point of $age$, we'll set the marginal effect to zero, and then solve for age: 
+- In order to find the turning point of $age$, we'll set the marginal effect to zero, and then solve for age: 
 $$
 \begin{aligned}
 \hat{\beta}_3 + 2\hat{\beta}_4 \cdot age^* &= 0 \\
@@ -51,13 +51,13 @@ $$
 
 ### Model specification
 
-**Bias on** $\tilde{\beta_1}$ (fsize)
+**Bias on $\tilde{\beta_1}$ (fsize):**
 
 -   Sign of $\beta_{tw}$: Households with two earners have higher combined income, so $\beta_tw > 0$.
 -   Sign of $\delta_1$: Larger households are more likely to have two earners (more adults = more potential earners), so $Cov(fsize, twoearn) > 0$, meaning $\delta_1 > 0$.
 -   Conclusion: The bias term $\beta_{tw} * \delta_1 > 0$, so $\tilde{\beta_1}$ is biased upward relative to the true $\beta_1$, which means that the negative effect of household size is understated in magnitude.
 
-**Bias on** $\tilde{\beta_6}$ (marr)
+**Bias on $\tilde{\beta_6}$ (marr):**
 
 -   Sign of $\beta_{tw}$: Households with two earners have a higher combined income, so $\beta_tw > 0$.
 -   Sign of $\delta_6$: Married households are more likely to have two earners than single-earner households, so $Cov(marr, twoearn) > 0$, meaning $\delta_6 > 0$.
@@ -67,14 +67,18 @@ $$
 
 ### Residual patterns and inference
 
--   **a)**: This specific pattern calls for MLR.5 (Homoscedasticity) $\text{Var}(u_i \mid educ_i) \neq \sigma^2$, because the variance of the error term is not constant but increases with years of education.
+**a) Which Gauss–Markov assumption does this pattern call into question?**:
 
--   **b)**:
+- This specific pattern calls for MLR.5 (Homoscedasticity) $\text{Var}(u_i \mid educ_i) \neq \sigma^2$, because the variance of the error term is not constant but increases with years of education.
 
-    -   Unbiasedness: Yes — unbiasedness follows from MLR.1–4 (in particular zero conditional mean, MLR.4), and heteroscedasticity (violation of MLR.5) does not affect this property
-    -   BLUE: By the Gauss–Markov theorem, OLS is BLUE only when MLR.1–5 all hold; with heteroscedasticity, GLS (not OLS) is the efficient linear unbiased estimator.
+**b) If MLR.5 is violated but MLR.1 - 4 still hold**:
 
--   **c)**: When spread of the residual grows with education, the homoscedasticity-based OLS standard errors are misestimated — they will be too small for highly educated households and too large for low-education households, producing invalid standard errors on average. As a result, t-statistics and F-statistics will be distorted, leading to incorrect p-values and potentially wrong test decisions (over-rejection or under-rejection of null hypotheses). The remedy is to use heteroscedasticity-robust standard errors.
+-   **Unbiasedness:** Yes — unbiasedness follows from MLR.1–4 (in particular zero conditional mean, MLR.4), and heteroscedasticity (violation of MLR.5) does not affect this property
+-   **BLUE:** By the Gauss–Markov theorem, OLS is BLUE only when MLR.1–5 all hold; with heteroscedasticity, GLS (not OLS) is the most efficient linear unbiased estimator.
+
+**c) What does this pattern imply for standard OLS standard errors and hypothesis tests if we use the homoscedasticity-based formula?**:
+
+- When spread of the residual grows with education, the homoscedasticity-based OLS standard errors are misestimated — they will be too small for highly educated households and too large for low-education households, producing invalid standard errors on average. As a result, t-statistics and F-statistics will be distorted, leading to incorrect p-values and potentially wrong test decisions (over-rejection or under-rejection of null hypotheses). The remedy is to use heteroscedasticity-robust standard errors.
 
 ## Exercise 4
 
@@ -99,14 +103,21 @@ $$
 
 ### Testing age effects
 
--   **1.)** Each $t$-test evaluates only one coefficient in isolation, ignoring the joint distribution and correlation between $\hat{\beta}_3$ and $\hat{\beta}_4$; it is possible to falsely conclude no effect even when the two coefficients are jointly significant.
--   **2.)** The $F$-test (partial $F$-test / restricted vs. unrestricted model comparison) is used for the joint null hypothesis:
+**1.) Why are two separate t - tests not suited to test if age has any effect?** 
+
+- Each $t$-test evaluates only one coefficient in isolation, ignoring the joint distribution and correlation between $\hat{\beta}_3$ and $\hat{\beta}_4$; it is possible to falsely conclude no effect even when the two coefficients are jointly significant.
+
+**2.) Test for the joint null hypothesis**
+
+- The $F$-test (partial $F$-test / restricted vs. unrestricted model comparison) is used for the joint null hypothesis:
 
 $$
 H_0: \beta_3 = 0 \text{ and } \beta_4 = 0
 $$
 
--   **3.)** The test statistic is calculated as follows: 
+**3.) Test statistic** 
+
+- The test statistic is calculated as follows: 
 
 $$
 F = \frac{(SSR_r - SSR_{ur}) / q}{SSR_{ur} / (N - k - 1)}
@@ -118,19 +129,28 @@ $$
 
 ### Error Variance and OLS Precision
 
- **a)**: Under homoscedasticity, $\text{Var}(\hat{\beta} \mid X) = \sigma^2(X'X)^{-1}$ is a simple scalar multiple of $(X'X)^{-1}$, valid when all errors share the same variance $\sigma^2$. Under heteroscedasticity, the "omega" formula $(X'X)^{-1}X'\Omega X(X'X)^{-1}$ is needed, where $\Omega$ is an $N \times N$ diagonal matrix with observation-specific error variances $\sigma_i^2$ on the diagonal (i.e., $\Omega_{ii} = \sigma_i^2$). The homoscedastic formula is a special case of the sandwich formula and is only correct when all diagonal elements of $\Omega$ are equal.
- 
-**b)**: As established in Question 3, the error variance increases with education, so the homoscedasticity formula misattributes the error structure — it pools all observations under a single $\hat{\sigma^2}$, which will be too low for high-education households and too high for low-education ones. This means the standard errors for coefficients driven by high-education variation (like the return to educ) will be understated, causing t-statistics to be inflated and leading to a wrong significance.
+ **a) Difference between Homoscedastic and Heteroscedastic formula and the $\Omega$ matrix?**
 
-**c)**: Under homoscedasticity, $\text{Var}(u_i \mid X) = \sigma^2$ for all $i$, so $\Omega$ simplifies to:
+- Under homoscedasticity, $\text{Var}(\hat{\beta} \mid X) = \sigma^2(X'X)^{-1}$ is a simple scalar multiple of $(X'X)^{-1}$, valid when all errors share the same variance $\sigma^2$. Under heteroscedasticity, the $\Omega$ formula $(X'X)^{-1}X'\Omega X(X'X)^{-1}$ is needed, where $\Omega$ is an $N \times N$ diagonal matrix with observation-specific error variances $\sigma_i^2$ on the diagonal (i.e., $\Omega_{ii} = \sigma_i^2$). The homoscedastic formula is a special case of the sandwich formula and is only correct when all diagonal elements of $\Omega$ are equal.
+ 
+**b) Why is the homoscedastic OLS error formula misleading when dealing with heteroscedasticity?**
+
+- As established in Question 3, the error variance increases with education, so the homoscedasticity formula misattributes the error structure, it pools all observations under a single $\hat{\sigma^2}$, which will be too low for high-education households and too high for low-education ones. This means the standard errors for coefficients driven by high-education variation (like the return to educ) will be understated, causing t-statistics to be inflated and leading to a wrong significance.
+
+**c) To what does $\Omega$ simplify to under homoscedasticity?**
+
+- Under homoscedasticity, $\text{Var}(u_i \mid X) = \sigma^2$ for all $i$, so $\Omega$ simplifies to:
 
 $$
 \Omega = \sigma^2 I_N
 $$
 
-where $I_N$ is the $N \times N$ identity matrix. Substituting this into the sandwich formula recovers the homoscedastic formula:
+- Where $I_N$ is the $N \times N$ identity matrix. Substituting this into the $\Omega$ formula recovers the homoscedastic formula:
 
 $$
 (X'X)^{-1}X'(\sigma^2 I)X(X'X)^{-1} = \sigma^2(X'X)^{-1}
 $$
-**d)**: No. Unbiasedness (requiring MLR.1–4) and validity of the standard OLS variance formula (additionally requiring MLR.5, homoscedasticity) are separate properties — OLS can be unbiased while its standard errors are completely wrong. With heteroscedasticity, the point estimates remain unbiased but the standard errors are invalid, making inference unreliable.
+**d) Is this statement correct?: "If OLS is unbiased, then the usual OLS standard errors are
+automatically valid."**
+
+- No. Unbiasedness (requiring MLR.1–4) and validity of the standard OLS variance formula (additionally requiring MLR.5, homoscedasticity) are separate properties — OLS can be unbiased while its standard errors are completely wrong. With heteroscedasticity, the point estimates remain unbiased but the standard errors are invalid, making inference unreliable.
