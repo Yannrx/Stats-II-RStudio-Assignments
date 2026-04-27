@@ -55,7 +55,7 @@ $$
 
 -   Sign of $\beta_{tw}$: Households with two earners have higher combined income, so $\beta_tw > 0$.
 -   Sign of $\delta_1$: Larger households are more likely to have two earners (more adults = more potential earners), so $Cov(fsize, twoearn) > 0$, meaning $\delta_1 > 0$.
--   Conclusion: The bias term \$\beta\_{tw} \* \delta\_1 \> 0, so $\tilde{\beta_1}$ is biased upward relative to the true $\beta_1$, which means that the megative effect of household size is understated in magnitude.
+-   Conclusion: The bias term $\beta_{tw} * \delta_1 > 0$, so $\tilde{\beta_1}$ is biased upward relative to the true $\beta_1$, which means that the negative effect of household size is understated in magnitude.
 
 **Bias on** $\tilde{\beta_6}$ (marr)
 
