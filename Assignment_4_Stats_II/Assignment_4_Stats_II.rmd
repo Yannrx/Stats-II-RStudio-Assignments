@@ -14,54 +14,52 @@ output: html_document
 
 ### a) Interpretation of coefficients
 
-$\hat{\beta}_1$ (fsize) = -0.0412
+$\hat{\beta}_1$ (`fsize`) = -0.0412  *(log-level model)*
 
--   In this log-level model, the coefficient $\hat{\beta}_1 = -0.0412$ implies that one additional household member is associated with an approximate $-4.12\%$ decrease in income ($100 \cdot \hat{\beta}_j$), while the exact formula $(e^{\hat{\beta}_1} - 1) \cdot 100$ yields a decrease of $-4.04\%$.
--   Since the difference between these results is marginal (less than one percentage point), the approximation remains economically equivalent to the exact calculation.
+-   A one-unit increase in household size is associated with an approximate 4.12% decrease in income, ceteris paribus.  
+-   We use $100\cdot \hat{\beta}_1$ (ii) because in a log-level model coefficients approximate percentage changes; since $|\hat{\beta}_1|$ is small, the exact effect $(e^{\hat{\beta}_1}-1)\cdot100 = -4.04\%$ is very similar.
 
-$\hat{\beta}_2$ ($\log(tw)$) = 0.2873
+$\hat{\beta}_2$ (`log(tw)`) = 0.2873  *(log-log model)*
 
--   Because both the dependent variable and $tw$ are logarithmically transformed, this specification represents a log-log model.
--   In such a model, the coefficient $\hat{\beta}_j$ directly measures an elasticity, meaning the value of $0.2873$ indicates that a $1\%$ increase in $tw$ is associated with a $0.2873\%$ increase in the dependent variable.
+-   A 1% increase in total wealth is associated with a 0.2873% increase in income, ceteris paribus.  
+-   We use $\hat{\beta}_2$ (i) because in a log-log model the coefficient directly measures an elasticity (percentage change in $y$ for a 1% change in $x$).
 
-$\hat{\beta}_6$ (marr) = 0.4217
+$\hat{\beta}_6$ (`marr`) = 0.4217  *(log-level model, dummy variable)*
 
--   Since $marr$ is a binary dummy variable in this log-level model, the approximation ($100 \cdot \hat{\beta}_6$) roughly estimates that being married is associated with a 42.17% increase in household income.
--   However, because the coefficient is relatively large, it is much more accurate to use the exact formula $(e^{\hat{\beta}_6} - 1) \cdot 100$, which reveals a true marriage premium of 52.46%.
+-   Being married is associated with a 52.46% higher income compared to not being married, ceteris paribus.  
+-   We use $(e^{\hat{\beta}_6}-1)\cdot100$ (iii) because for dummy variables in log-level models the exact percentage effect is required, and the approximation $100\cdot \hat{\beta}_6 = 42.17\%$ is inaccurate due to the large coefficient.
 
-### b) $Age$ and $Age^2$
+### b) Marginal effect of $age$ and $age^2$
 
 **1.) Marginal effect of age on $log(inc)$:**
 
-- The marginal effect is: $\frac{\partial \log(inc)}{\partial age} = \beta_3 + 2\beta_4 age$. Evaluating this formula at $age=25$, $0.0512 + 2(-0.0006)(25) = 0.0212$ This means, that one additional year of age is associated with an approximate 2.12% increase in household income, ceteris paribus.
+- The marginal effect of age is $\frac{\partial \log(inc_i)}{\partial age_i} = \beta_3 + 2\beta_4 age_i$.  At $age_i = 25$: $0.0512 + 2(-0.0006)(25) = 0.0212$.  
+-  Thus, at age 25, a small increase in age is associated with an approximate 2.12\% increase in income, ceteris paribus.
 
-**2.) turning point of $age$:**
+**2.) Turning point of $age$:**
 
-- In order to find the turning point of $age$, we'll set the marginal effect to zero, and then solve for age: 
-$$
-\begin{aligned}
-\hat{\beta}_3 + 2\hat{\beta}_4 \cdot age^* &= 0 \\
-\Longrightarrow age^* &= \frac{-\hat{\beta}_3}{2\hat{\beta}_4} \\
-&= \frac{-0{,}0512}{2 \times (-0{,}0006)} \\
-&= 42{,}67 \text{ years}
-\end{aligned}
-$$
+- The turning point is obtained by setting the marginal effect to zero:
+  $\hat{\beta}_3 + 2\hat{\beta}_4 age = 0 
+  \Rightarrow age^* = -\frac{\hat{\beta}_3}{2\hat{\beta}_4}
+  = -\frac{0.0512}{2(-0.0006)} \approx 42.67.$  
+
+-  This turning point implies that income rises with age until about 42.7 years and declines thereafter, ceteris paribus, since the negative coefficient on $age^2$ implies a concave relationship.
 
 ## Exercise 2
 
 ### Model specification
 
-**Bias on $\tilde{\beta_1}$ (fsize):**
+**Bias on $\tilde{\beta}_1$ (fsize):**
 
--   Sign of $\beta_{tw}$: Households with two earners have higher combined income, so $\beta_tw > 0$.
--   Sign of $\delta_1$: Larger households are more likely to have two earners (more adults = more potential earners), so $Cov(fsize, twoearn) > 0$, meaning $\delta_1 > 0$.
--   Conclusion: The bias term $\beta_{tw} * \delta_1 > 0$, so $\tilde{\beta_1}$ is biased upward relative to the true $\beta_1$, which means that the negative effect of household size is understated in magnitude.
+- Sign of $\beta_{tw}$: Households with two earners are associated with higher income, so $\beta_{tw} > 0$.  
+- Sign of $\delta_1$: Larger households are more likely to have two earners, so $Cov(fsize, twoearn) > 0 \Rightarrow \delta_1 > 0$.  
+- Conclusion: Since $\beta_{tw} \cdot \delta_1 > 0$, $\tilde{\beta}_1$ is biased upward relative to $\beta_1$.  
 
-**Bias on $\tilde{\beta_6}$ (marr):**
+**Bias on $\tilde{\beta}_6$ (marr):**
 
--   Sign of $\beta_{tw}$: Households with two earners have a higher combined income, so $\beta_tw > 0$.
--   Sign of $\delta_6$: Married households are more likely to have two earners than single-earner households, so $Cov(marr, twoearn) > 0$, meaning $\delta_6 > 0$.
--   Conclusion: The bias term is biased upward $\beta_{tw} * \delta_6 > 0$, $\tilde{\beta_6}$ in comparison to the real $\beta_6$ the marriage premium is overstated because it partly captures the two-earner effect.
+- Sign of $\beta_{tw}$: Households with two earners are associated with higher income, so $\beta_{tw} > 0$.  
+- Sign of $\delta_6$: Married households are more likely to have two earners, so $Cov(marr, twoearn) > 0 \Rightarrow \delta_6 > 0$.  
+- Conclusion: Since $\beta_{tw} \cdot \delta_6 > 0$, $\tilde{\beta}_6$ is biased upward relative to $\beta_6$.
 
 ## Exercise 3
 
@@ -73,12 +71,13 @@ $$
 
 **b) If MLR.5 is violated but MLR.1 - 4 still hold**:
 
--   **Unbiasedness:** Yes — unbiasedness follows from MLR.1–4 (in particular zero conditional mean, MLR.4), and heteroscedasticity (violation of MLR.5) does not affect this property
--   **BLUE:** By the Gauss–Markov theorem, OLS is BLUE only when MLR.1–5 all hold; with heteroscedasticity, GLS (not OLS) is the most efficient linear unbiased estimator.
+- Yes, OLS is **unbiased** because the zero conditional mean assumption (MLR.4), $E(u \mid X)=0$, ensures that the regressors are uncorrelated with the error term.
+
+- No, OLS is no longer **BLUE** because the homoskedasticity assumption (MLR.5) is violated; Weighted Least Squares (WLS) is more efficient.
 
 **c) What does this pattern imply for standard OLS standard errors and hypothesis tests if we use the homoscedasticity-based formula?**:
 
-- When spread of the residual grows with education, the homoscedasticity-based OLS standard errors are misestimated — they will be too small for highly educated households and too large for low-education households, producing invalid standard errors on average. As a result, t-statistics and F-statistics will be distorted, leading to incorrect p-values and potentially wrong test decisions (over-rejection or under-rejection of null hypotheses). The remedy is to use heteroscedasticity-robust standard errors.
+- Under heteroskedasticity, the usual OLS standard errors are incorrect because they rely on the homoskedasticity assumption. As a result, t- and F-statistics are invalid, and standard inference (e.g., hypothesis tests and confidence intervals) is unreliable. A common remedy in practice is to use heteroskedasticity-robust standard errors.
 
 ## Exercise 4
 
@@ -97,24 +96,24 @@ t_{0.01, 527} = -2.333
 $$
 
 -   p-value: $p = P(T_{527} \leq -2.050) \approx 0.0204$
--   Test decision: Since $t_{obs} = -2.050 > t_{crit} = -2.333$ (the observed $t$ does **not** fall in the rejection region), and $p\text{-value} = 0.020 > \alpha = 0.01$, we **fail to reject** $H_0$ at the 1% significance level.
+-   Test decision: Since $t_{obs} = -2.050 > t_{crit} = -2.333$, the observed $t$ does **not** fall in the rejection region and $p\text{-value} = 0.020 > \alpha = 0.01$, we **fail to reject** $H_0$ at the 1% significance level.
 
 ## Exercise 5
 
 ### Testing age effects
 
-**1.) Why are two separate t - tests not suited to test if age has any effect?** 
+**1.) Why are two separate t-tests not suited to test if age has any effect?** 
 
-- Each $t$-test evaluates only one coefficient in isolation, ignoring the joint distribution and correlation between $\hat{\beta}_3$ and $\hat{\beta}_4$; it is possible to falsely conclude no effect even when the two coefficients are jointly significant.
+- Separate t‑tests are not appropriate because they ignore that the $age$ and $age²$ coefficients must be tested jointly. Since the two variables are correlated and represent one combined effect, we must test whether both coefficients are zero simultaneously.
+
 
 **2.) Test for the joint null hypothesis**
 
-- The $F$-test (partial $F$-test / restricted vs. unrestricted model comparison) is used for the joint null hypothesis:
+- The partial F-test (comparing the restricted and unrestricted model) is appropriate here because we test only a subset of parameters. In this case, the joint null hypothesis is
 
 $$
 H_0: \beta_3 = 0 \text{ and } \beta_4 = 0
 $$
-
 **3.) Test statistic** 
 
 - The test statistic is calculated as follows: 
@@ -131,11 +130,12 @@ $$
 
  **a) Difference between Homoscedastic and Heteroscedastic formula and the $\Omega$ matrix?**
 
-- Under homoscedasticity, $\text{Var}(\hat{\beta} \mid X) = \sigma^2(X'X)^{-1}$ is a simple scalar multiple of $(X'X)^{-1}$, valid when all errors share the same variance $\sigma^2$. Under heteroscedasticity, the $\Omega$ formula $(X'X)^{-1}X'\Omega X(X'X)^{-1}$ is needed, where $\Omega$ is an $N \times N$ diagonal matrix with observation-specific error variances $\sigma_i^2$ on the diagonal (i.e., $\Omega_{ii} = \sigma_i^2$). The homoscedastic formula is a special case of the sandwich formula and is only correct when all diagonal elements of $\Omega$ are equal.
+- Under homoskedasticity, $\text{Var}(\hat{\beta}\mid X)=\sigma^{2}(X'X)^{-1}$ because all error terms share the same variance $\sigma^{2}$. Under heteroskedasticity, the sandwich formula $(X'X)^{-1}X'\Omega X(X'X)^{-1}$ is required since error variances differ across observations. Here, $\Omega$ is the variance–covariance matrix of the error term, containing the observation-specific error variances on its diagonal.
+
  
 **b) Why is the homoscedastic OLS error formula misleading when dealing with heteroscedasticity?**
 
-- As established in Question 3, the error variance increases with education, so the homoscedasticity formula misattributes the error structure, it pools all observations under a single $\hat{\sigma^2}$, which will be too low for high-education households and too high for low-education ones. This means the standard errors for coefficients driven by high-education variation (like the return to educ) will be understated, causing t-statistics to be inflated and leading to a wrong significance.
+- As established in Question 3, the error variance increases with education, so the homoscedasticity formula misattributes the error structure, it pools all observations under a single $\hat{\sigma^2}$, which will be too low for high-education households and too high for low-education ones. This means the standard errors for coefficients driven by variation among high‑education households (like the return to educ) will be understated, causing t-statistics to be inflated and leading to a wrong significance.
 
 **c) To what does $\Omega$ simplify to under homoscedasticity?**
 
@@ -148,9 +148,13 @@ $$
 - Where $I_N$ is the $N \times N$ identity matrix. Substituting this into the $\Omega$ formula recovers the homoscedastic formula:
 
 $$
-(X'X)^{-1}X'(\sigma^2 I)X(X'X)^{-1} = \sigma^2(X'X)^{-1}
+(X'X)^{-1}X'(\sigma^2 I)X(X'X)^{-1}
+= \sigma^2 (X'X)^{-1}X' I X (X'X)^{-1}
+= \sigma^2 (X'X)^{-1} X'X (X'X)^{-1}
+= \sigma^2 (X'X)^{-1}
 $$
 **d) Is this statement correct?: "If OLS is unbiased, then the usual OLS standard errors are
 automatically valid."**
 
-- No. Unbiasedness (requiring MLR.1–4) and validity of the standard OLS variance formula (additionally requiring MLR.5, homoscedasticity) are separate properties — OLS can be unbiased while its standard errors are completely wrong. With heteroscedasticity, the point estimates remain unbiased but the standard errors are invalid, making inference unreliable.
+- No. OLS can be unbiased even when the usual OLS standard errors are invalid, because unbiasedness concerns only the expectation of the coefficients, while valid standard errors additionally require homoskedasticity. With heteroskedasticity, the coefficient estimates remain unbiased but the usual standard errors are inconsistent, making inference unreliable.
+
